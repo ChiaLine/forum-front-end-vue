@@ -4,14 +4,16 @@
     <div class="card-body">
       <img
       v-for="following in followings" :key="following.id"
-      :src="following.image"
+      :src="following.image | emptyImage"
       width="60px" height="60px" class="mr-1 mb-1">
     </div>
   </div>
 </template>
 
 <script>
+import { emptyImageFilter } from '../utils/mixins'
 export default {
+  mixins: [ emptyImageFilter ],
   props: {
     followings: {
       type: Array,

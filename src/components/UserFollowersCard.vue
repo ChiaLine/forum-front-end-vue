@@ -4,7 +4,7 @@
     <div class="card-body">
       <a href="/users/1" v-for="follower in followers" :key="follower.id">
         <img
-          :src="follower.image"
+          :src="follower.image | emptyImage"
           width="60"
           height="60"
           class="avatar mr-1 mb-1"
@@ -15,7 +15,9 @@
 </template>
 
 <script>
+import { emptyImageFilter } from '../utils/mixins'
 export default {
+  mixins: [ emptyImageFilter ],
   props: {
     followers: {
       type: Array,

@@ -9,7 +9,7 @@
     <div class="col-lg-4">
       <img
         class="img-responsive center-block" 
-    src="https://loremflickr.com/320/240/food,dessert,restaurant/"
+        src="https://loremflickr.com/320/240/food,dessert,restaurant/"
         style="width: 250px;margin-bottom: 25px;"
       >
       <div class="contact-info-wrap">

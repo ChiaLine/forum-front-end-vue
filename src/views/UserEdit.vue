@@ -1,39 +1,44 @@
 <template>
-  <div class="album py-5 bg-light">
-    <div class="container">
-      <div class="card mb-3">
-        <!-- 用户资料卡 UserProfileCard -->
-        <UserProfileCard :user="user" :initial-is-followed="isFollowed" />
+  <div class="container py-5">
+    <form @submit.stop.prevent="handleSubmit">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          v-model="user.name"
+          id="name"
+          type="text"
+          name="name"
+          class="form-control"
+          placeholder="Enter Name"
+          required
+        />
       </div>
-      <div class="row">
-        <div class="col-md-4">
-          <!-- 用户关注 UserFollowingsCard -->
-          <UserFollowingsCard :followings="followings" />
-          <br />
-          <!-- 用户追随者 UserFollowersCard -->
-          <UserFollowersCard :followers="followers" />
-        </div>
-        <div class="col-md-8">
-          <!-- 用户评论 UserCommentsCard -->
-          <UserCommentsCard :comments="comments" />
-          <br />
-          <!-- 用户最喜欢的餐厅 UserFavoritedRestaurantsCard -->
-          <UserFavoritedRestaurantsCard
-            :favorited-restaurants="favoritedRestaurants"
-          />
-        </div>
+
+      <div class="form-group">
+        <label for="image">Image</label>
+        <img
+          :src="user.image"
+          v-if="user.image"
+          class="d-block img-thumbnail mb-3"
+          width="200"
+          height="200"
+        />
+        <input
+          id="image"
+          type="file"
+          name="image"
+          accept="image/*"
+          class="form-control-file"
+          @change="handleFileChange"
+        />
       </div>
-    </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
   </div>
 </template>
 
 <script>
-import UserProfileCard from "../components/UserProfileCard.vue";
-import UserFollowingsCard from "../components/UserFollowingsCard.vue";
-import UserFollowersCard from "../components/UserFollowersCard.vue";
-import UserCommentsCard from "../components/UserCommentsCard.vue";
-import UserFavoritedRestaurantsCard from "../components/UserFavoritedRestaurantsCard.vue";
-
 const dummyData = {
   profile: {
     id: 1,
@@ -1293,66 +1298,49 @@ const dummyData = {
 };
 
 export default {
-  components: {
-    UserProfileCard,
-    UserFollowingsCard,
-    UserFollowersCard,
-    UserCommentsCard,
-    UserFavoritedRestaurantsCard,
-  },
   data() {
     return {
       user: {
-        id: 0,
+        id: -1,
         image: "",
         name: "",
-        email: "",
-        followingsLength: 0,
-        followersLength: 0,
-        commentsLength: 0,
-        favoritedRestaurantsLength: 0,
       },
-      isFollowed: false,
-      followings: [],
-      followers: [],
-      comments: [],
-      favoritedRestaurants: [],
     };
   },
-  methods: {
-    fetchUser() {
-      const { profile, isFollowed } = dummyData;
-      const {
-        id,
-        image,
-        name,
-        email,
-        Followings,
-        Followers,
-        Comments,
-        FavoritedRestaurants,
-      } = profile;
-
-      this.user = {
-        id,
-        image,
-        name,
-        email,
-        followingsLength: Followings.length,
-        followersLength: Followers.length,
-        commentsLength: Comments.length,
-        favoritedRestaurantsLength: FavoritedRestaurants.length,
-      };
-
-      this.isFollowed = isFollowed;
-      this.followings = Followings;
-      this.followers = Followers;
-      this.comments = Comments;
-      this.favoritedRestaurants = FavoritedRestaurants;
-    },
-  },
   created() {
-    this.fetchUser();
+    const { id } = this.$route.params;
+    this.fetchUser(id);
+  },
+  methods: {
+    fetchUser(userId) {
+      console.log("userId", userId);
+      this.user = {
+        ...this.user,
+        id: dummyData.profile.id,
+        image: dummyData.profile.image,
+        name: dummyData.profile.name,
+      };
+    },
+    handleFileChange(e) {
+      const { files } = e.target;
+      if (files.length === 0) {
+        console.log(files);
+        this.user.image = dummyData.profile.image;
+        return;
+      } else {
+        const imageURL = window.URL.createObjectURL(files[0]);
+        console.log(imageURL);
+        this.user.image = imageURL;
+      }
+    },
+    handleSubmit(e) {
+      const form = e.target;
+      // 將 form 轉成 formData 準備傳送到後端伺服器
+      const formData = new FormData(form);
+      for (let [name, value] of formData.entries()) {
+        console.log(name + ":" + value);
+      }
+    },
   },
 };
 </script>
