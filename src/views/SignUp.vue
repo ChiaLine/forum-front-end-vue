@@ -67,8 +67,9 @@
       <button
         class="btn btn-lg btn-primary btn-block mb-3"
         type="submit"
+        :disabled="isProcessing"
       >
-        Submit
+        {{ isProcessing ? '處理中':'Submit'}}
       </button>
 
       <div class="text-center mb-3">
@@ -87,6 +88,9 @@
 </template>
 
 <script>
+import authorizationAPI from '../apis/authorization';
+import { Toast } from '../utils/helpers';
+
 export default {
   data() {
     return {
@@ -94,18 +98,68 @@ export default {
       email: '',
       password: '',
       passwordCheck: '',
+      isProcessing: false
     }
   },
   methods: {
-    handleSubmit() {
-      const data = JSON.stringify({
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        passwordCheck: this.passwordCheck,
-      })
-      // TODO 向後端驗證使用者登入資訊是否合法
-      console.log('data', data)
+    async handleSubmit() {
+      try {
+        if ( !this.name ) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請填入名稱',
+          })
+          return
+        } else if ( !this.email ) {
+          Toast.fire({
+            icon: 'warning',
+            title: '請填入 email',
+          })
+          return
+        } else if ( this.password.length < 8) {
+          Toast.fire({
+            icon: 'warning',
+            title: '密碼請填入8位數',
+          })
+          return
+        } else if ( this.passwordCheck !== this.password ) {
+          Toast.fire({
+            icon: 'warning',
+            title: '密碼確認失敗，請重新輸入..',
+          })
+          this.password = ''
+          this.passwordCheck = ''
+          return
+        } 
+        // 表單送出後 禁用按鈕
+        this.isProcessing = true
+
+        // 透過 API 將資料送到伺服器
+        const { data }  = await authorizationAPI.signUp({
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          passwordCheck: this.passwordCheck,
+        })
+
+        if (data.status !== 'success') {
+          throw new Error(data.message)
+        }
+
+        // 成功註冊後轉到登入頁
+        this.$router.push('/signin')
+      } catch (error) {
+        // 恢復按鈕
+        this.isProcessing = false
+        this.name = ''
+        this.email = ''
+        this.password = ''
+        this.passwordCheck = ''
+        Toast.fire({
+          icon: 'warning',
+          title: '信箱重複，請重新輸入..',
+        })
+      }
     },
   }
 }

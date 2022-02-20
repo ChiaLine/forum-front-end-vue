@@ -29,42 +29,11 @@
 
 <script>
 import AdminNav from "../components/AdminNav.vue";
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$G70ZmsHRXYWWd0qjkP441ukpCBAeXAeUwXNlhIOr.oa8BuC8jORLS",
-      isAdmin: true,
-      image: null,
-      createdAt: "2022-01-29T12:03:27.000Z",
-      updatedAt: "2022-01-29T12:03:27.000Z",
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$UCwA0gYP2eR.2VTRpaByGeyUlwjshzDh6ekc1oGKHcEjkkc5crh5u",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-01-29T12:03:27.000Z",
-      updatedAt: "2022-01-29T12:03:27.000Z",
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$uPopN.W5QzSZMnRTmEm.De.ZPV7YKuExI0iJqub425gZYPVwEc1P6",
-      isAdmin: false,
-      image: null,
-      createdAt: "2022-01-29T12:03:27.000Z",
-      updatedAt: "2022-01-29T12:03:27.000Z",
-    },
-  ],
-};
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
 export default {
+  name: 'AdminUsers',
   components: {
     AdminNav,
   },
@@ -77,24 +46,32 @@ export default {
     this.fetchUsers()
   },
   methods: {
-    fetchUsers() {
-      this.users = dummyData.users.map( user => {
-        return {
-          ...user,
-          isAuthenticated: user.isAdmin,
-        }
-      })
-    },
-    toggleUserRole(userId) {
-      this.users = this.users.map(user => {
-        if(user.id === userId){
+    async fetchUsers() {
+      try {
+        const { data } = await adminAPI.users.get()
+        this.users = data.users.map( user => {
           return {
-            ... user,
-            isAdmin: !user.isAdmin
+            ...user,
+            isAuthenticated: user.isAdmin,
           }
-        }
-        return user
-      })
+         })
+      } catch (error) {
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得使用者資料，請稍後再試'
+        })
+      }     
+    },
+    async toggleUserRole(userId) {
+       this.users = this.users.map(user => {
+          if(user.id === userId){
+            return {
+              ... user,
+              isAdmin: !user.isAdmin
+            }
+          }
+          return user
+        })
     }
   }
 };
