@@ -82,8 +82,6 @@ export default {
           isAdmin: (!isAdmin).toString()
         })
         
-        // const { data } = await adminAPI.users.update(userId, {isAdmin: !isAdmin})
-
         if (data.status === 'error') {
           throw new Error(data.message)
         }
