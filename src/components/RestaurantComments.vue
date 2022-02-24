@@ -36,20 +36,11 @@
 
 <script>
 import { fromNowFilter } from '../utils/mixins'
-
-const dummyUser = {
-  currentUser: {
-    "id": 1,
-    "name": "root",
-    "email": "root@example.com",
-    "isAdmin": true
-  },
-  isAuthenticated: true
-}
+import { mapState } from 'vuex'
 
 export default {
   props: {
-    restaurantComments: {
+    initialRestaurantComments: {
       type: Array,
       require: true
     }
@@ -57,7 +48,17 @@ export default {
   mixins: [ fromNowFilter ],
   data() {
     return {
-      currentUser: dummyUser.currentUser
+      restaurantComments: this.initialRestaurantComments
+    }
+  },
+  computed: {
+    // 取得 user 登入資料 自動在data內產生currentUsery 資料
+    ...mapState(['currentUser'])
+  },
+  watch: {
+    // 監聽資料更新時，請重新賦值
+    initialRestaurantComments(newValue) {
+      this.restaurantComments = newValue
     }
   },
   methods: {

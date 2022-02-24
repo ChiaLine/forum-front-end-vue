@@ -37,7 +37,6 @@ export default {
     this.fetchRestaurant(id);
   },
   beforeRouteUpdate(to, from, next){
-      console.log('beforeRouteUpdate', to, from)
     // 取得params資料
     const { id } =  to.params
     // 呼叫API方法把取得資料用參數方式帶入
@@ -48,7 +47,6 @@ export default {
     async fetchRestaurant(restaurantId) {
       try {
         const { data } = await adminAPI.restaurants.getDetail({restaurantId})
-        console.log(data.restaurant)
         const {
           id,
           name,

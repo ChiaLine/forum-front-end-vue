@@ -22,17 +22,17 @@
         <p class="mt-3">
           <button
             v-if="user.isFollowed"
-            @click.stop.prevent="deleteFollowing(user.id)"
             type="button"
             class="btn btn-danger"
+            @click.stop.prevent="deleteFollowing(user.id)"
           >
             取消追蹤
           </button>
           <button
             v-else
-            @click.stop.prevent="addFollowing(user.id)"
             type="button"
             class="btn btn-primary"
+            @click.stop.prevent="addFollowing(user.id)"
           >
             追蹤
           </button>
@@ -62,8 +62,10 @@ export default {
     async fetchUsers() {
       try {
         const  { data }  = await usersAPI.getTopUsers()
-        // console.log(data)
-        // this.users = data.users
+         if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
         this.users = data.users.map(user => ({
           id: user.id,
           name: user.name,
@@ -71,8 +73,8 @@ export default {
           followerCount: user.FollowerCount,
           isFollowed: user.isFollowed
         }))
+
       } catch (error) {
-        console.log(error)
         Toast.fire({
           icon: 'error',
           title: '無法取得美食達人，請稍後再試..'
@@ -82,7 +84,6 @@ export default {
     async addFollowing (userId) {
       try {
         const { data } = await usersAPI.addFollowing({ userId })
-        console.log('data', data)
 
         if (data.status !== 'success') {
           throw new Error(data.message)

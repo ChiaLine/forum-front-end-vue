@@ -62,7 +62,6 @@ export default {
           page: queryPage,
           categoryId: queryCategoryId,
         });
-        // console.log(response.data)
         //   STEP 2：透過解構賦值，將所需要的資料從 response.data 取出
         const {
           restaurants,
@@ -82,7 +81,6 @@ export default {
         this.previousPage = prev;
         this.nextPage = next;
       } catch (error) {
-          console.log('error', error)
         Toast.fire({
           icon: 'error',
           title: '無法取得餐廳資料，請稍後再試..'
@@ -91,12 +89,10 @@ export default {
     },
   },
   created() {
-    // console.log(this.$route.query)
     const { page = '', categoryId = '' } =  this.$route.query
     this.fetchRestaurants({ queryPage: page, queryCategoryId: categoryId })
   },
   beforeRouteUpdate(to, from, next){
-    //   console.log('beforeRouteUpdate', to, from)
     // 取得query資料
     const { page = '', categoryId = '' } =  to.query
     // 呼叫API方法把取得資料用參數方式帶入

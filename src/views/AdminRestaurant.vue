@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     async fetchRestaurant(restaurantId) {
-       // console.log(restaurantId);
       try {
         const { data } = await adminAPI.restaurants.getDetail({restaurantId})
         const { restaurant } = data;

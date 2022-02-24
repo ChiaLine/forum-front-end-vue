@@ -39,7 +39,7 @@ export default {
       // 是必要的資料 一定要傳入 
       required: true,
     }
-  }
+  },
 }
 </script>
 

@@ -140,8 +140,7 @@ export default {
   },
   watch: {
     // 監聽資料更新時，請重新賦值
-    initialRestaurant(newValue, oldValue) {
-      console.log(newValue, oldValue)
+    initialRestaurant(newValue) {
       this.restaurant = {
         ...this.restaurant,
         ...newValue
@@ -168,7 +167,6 @@ export default {
     },
     handleFileChange(e) {
       const { files } = e.target;
-      // console.log(files)
       if (files.length === 0) {
         // 使用者沒有上傳檔案
         this.restaurant.image = "";
@@ -196,7 +194,6 @@ export default {
 
       // 取得表單區 element資料
       const form = e.target;
-      // console.log(form)
       // 建立表單資料
       const formData = new FormData(form);
       this.$emit("after-submit", formData);

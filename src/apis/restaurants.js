@@ -5,6 +5,25 @@ import { apiHelper } from './../utils/helpers'
 const getToken = () => localStorage.getItem('token')
 
 export default {
+  getRestaurant ({restaurantId}) {
+    return apiHelper.get(`/restaurants/${restaurantId}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
+  // 新增評論
+  addComment(payload) {
+    return apiHelper.post(`/comments`, payload, {
+      headers: {
+        Authorization: `Bearer ${getToken()}`
+      }
+    })
+  },
+  // 刪除評論
+  deleteComment ( id ) {
+    return apiHelper.delete(`/comments/${id}`, {
+      headers: { Authorization: `Bearer ${getToken()}` }
+    })
+  },
   // 攜帶 page 和 categoryId 參數
   getRestaurants ({ page, categoryId }) {
     // 建立處理 page 和 categoryId 參數的方法

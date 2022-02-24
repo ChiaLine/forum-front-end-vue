@@ -6,7 +6,30 @@
         {{ restaurant.categoryName }}
       </span>
     </div>
-
+    <div class="col-lg-4">
+      <img
+        class="img-responsive center-block" 
+        :src="restaurant.image | emptyImage"
+        style="width: 250px;margin-bottom: 25px;"
+      >
+      <div class="contact-info-wrap">
+        <ul class="list-unstyled">
+          <li>
+            <strong>Opening Hour:</strong>
+            {{restaurant.openingHours}}
+          </li>
+          <li>
+            <strong>Tel:</strong>
+            {{restaurant.tel}}
+          </li>
+          <li>
+            <strong>Address:</strong>
+            {{restaurant.address}}
+          </li>
+        </ul>
+      </div>
+    </div>
+      <p>{{ restaurant.description ?  restaurant.description: "未描述"}}</p>
     <hr>
 
     <ul>
@@ -25,84 +48,9 @@
 </template>
 
 <script>
-
-const dummyData = {
-    "restaurant": {
-        "id": 1,
-        "name": "Mellie Schuppe",
-        "tel": "(915) 611-7223",
-        "address": "47090 Julien Stream",
-        "opening_hours": "08:00",
-        "description": "aliquam dolores qui",
-        "image": "https://loremflickr.com/320/240/restaurant,food/?random=1.7742060947922411",
-        "viewCounts": 1,
-        "createdAt": "2022-01-29T12:03:27.000Z",
-        "updatedAt": "2022-02-02T09:36:20.000Z",
-        "CategoryId": 5,
-        "Category": {
-            "id": 5,
-            "name": "素食料理",
-            "createdAt": "2022-01-29T12:03:27.000Z",
-            "updatedAt": "2022-01-29T12:03:27.000Z"
-        },
-        "Comments": [
-            {
-                "id": 1,
-                "text": "Voluptas ducimus et.",
-                "UserId": 1,
-                "RestaurantId": 1,
-                "createdAt": "2022-01-29T12:03:27.000Z",
-                "updatedAt": "2022-01-29T12:03:27.000Z",
-                "User": {
-                    "id": 1,
-                    "name": "root",
-                    "email": "root@example.com",
-                    "password": "$2a$10$G70ZmsHRXYWWd0qjkP441ukpCBAeXAeUwXNlhIOr.oa8BuC8jORLS",
-                    "isAdmin": true,
-                    "image": null,
-                    "createdAt": "2022-01-29T12:03:27.000Z",
-                    "updatedAt": "2022-01-29T12:03:27.000Z"
-                }
-            },
-            {
-                "id": 51,
-                "text": "Nihil commodi nobis culpa.",
-                "UserId": 2,
-                "RestaurantId": 1,
-                "createdAt": "2022-01-29T12:03:27.000Z",
-                "updatedAt": "2022-01-29T12:03:27.000Z",
-                "User": {
-                    "id": 2,
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "$2a$10$UCwA0gYP2eR.2VTRpaByGeyUlwjshzDh6ekc1oGKHcEjkkc5crh5u",
-                    "isAdmin": false,
-                    "image": null,
-                    "createdAt": "2022-01-29T12:03:27.000Z",
-                    "updatedAt": "2022-01-29T12:03:27.000Z"
-                }
-            },
-            {
-                "id": 101,
-                "text": "Dolores a deserunt facilis natus voluptatem minima cum placeat.",
-                "UserId": 2,
-                "RestaurantId": 1,
-                "createdAt": "2022-01-29T12:03:27.000Z",
-                "updatedAt": "2022-01-29T12:03:27.000Z",
-                "User": {
-                    "id": 2,
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "$2a$10$UCwA0gYP2eR.2VTRpaByGeyUlwjshzDh6ekc1oGKHcEjkkc5crh5u",
-                    "isAdmin": false,
-                    "image": null,
-                    "createdAt": "2022-01-29T12:03:27.000Z",
-                    "updatedAt": "2022-01-29T12:03:27.000Z"
-                }
-            }
-        ]
-    }
-}
+import { emptyImageFilter } from '../utils/mixins'
+import restaurantsAPI from "../apis/restaurants.js";
+import { Toast } from './../utils/helpers'
 
 export default {
   data() {
@@ -117,19 +65,33 @@ export default {
       isAdmin: true
     }
   },
+  mixins: [ emptyImageFilter ],
   methods: {
-    fetchRestaurant() {
-      const { restaurant } = dummyData
-      this.restaurant = {
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
+        console.log(data)
+
+        const { restaurant } = data
+        this.restaurant = {
+          ...restaurant,
         name: restaurant.name,
         viewCounts: restaurant.viewCounts,
         categoryName: restaurant.Category.name,
         commentsLength: restaurant.Comments.length,
       }
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得餐廳資料，請稍後再試..",
+        });
+      }      
     }
   },
   created() {
-    this.fetchRestaurant()
+    const { id } = this.$route.params;
+    console.log(id)
+    this.fetchRestaurant(id)
   }
 }
 </script>

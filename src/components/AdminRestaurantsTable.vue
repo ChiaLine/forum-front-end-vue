@@ -77,7 +77,6 @@ export default {
       }
     },
     async deleteRestaurant(restaurantID) {
-      console.log("id", restaurantID);
       try {
         const { data } = await adminAPI.restaurants.delete(restaurantID)
 

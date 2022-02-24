@@ -21,7 +21,7 @@
         </p>
         <span class="badge badge-secondary">{{ restaurant.Category ? restaurant.Category.name : '未分類' }}</span>
         <p class="card-text text-truncate">
-          {{ restaurant.description }}
+          {{ restaurant.description ?  restaurant.description : "未描述"}}
         </p>
       </div>
       <div class="card-footer">
@@ -68,7 +68,6 @@ import { emptyImageFilter } from '../utils/mixins'
 // STEP 1: 載入 API 方法和 Toast 提示工具
 import usersAPI from '../apis/users'
 import { Toast } from '../utils/helpers'
-import users from '../apis/users'
 
 export default {
   mixins: [ emptyImageFilter ],
@@ -89,7 +88,6 @@ export default {
       try {
         // STEP 3: 使用撰寫好的 addFavorite 方法去呼叫 API，並取得回傳內容
         const { data } = await usersAPI.addFavorite({ restaurantID })
-        // console.log('response', data)
         // STEP 4: 若請求過程有錯，則進到錯誤處理
         if (data.status !== 'success') {
           throw new Error(data.methods)
@@ -106,13 +104,11 @@ export default {
           icon: 'error',
           title: '無法將餐廳加入到最愛，請稍候再試..'
         })
-        console.log(error)
       }
     },
     async deleteFavorited(restaurantID) {
       try {
         const { data } = await usersAPI.deleteFavorite({ restaurantID })
-        console.log('response', data)
         if (data.status !== 'success') {
           throw new Error(data.methods)
         }
@@ -125,12 +121,11 @@ export default {
           icon: 'error',
           title: '無法將餐廳加入到最愛，請稍候再試..'
         })
-        console.log(error)
       }
     },
     async addIsLiked(restaurantID) {
       try {
-        const { data } = await users.addLiked({ restaurantID })
+        const { data } = await usersAPI.addLiked({ restaurantID })
         if (data.status !== 'success') {
           throw new Error(data.methods)
         }
@@ -147,7 +142,7 @@ export default {
     },
     async deleteIsLiked(restaurantID) {
       try {
-        const { data } = await users.deleteLike({ restaurantID })
+        const { data } = await usersAPI.deleteLike({ restaurantID })
         if (data.status !== 'success') {
           throw new Error(data.methods)
         }

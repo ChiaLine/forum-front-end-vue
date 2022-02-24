@@ -24,13 +24,11 @@ export default {
   },
   methods: {
     async handleaFterSubmit(formData) {
-      console.log(formData);
       try {
         // 送出表單後關閉按紐
         this.isProcessing = true
         // 透過 API 將表單資料送到伺服器
         const { data } = await adminAPI.restaurants.create({ formData })
-        console.log(data);
         // 新增失敗就拋出錯誤
         if (data.status !== 'success') {
           throw new Error(data.message)

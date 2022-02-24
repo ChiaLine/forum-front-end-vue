@@ -45,12 +45,10 @@ export default {
     async fetchFeeds() {
         try {
             const response = await restaurantsFeedsAPI.getFeeds()
-            // console.log('fetchFeeds', response)
             this.restaurants = response.data.restaurants
             // 先過濾 Restaurant內有資料才保留下來
               this.comments = response.data.comments.filter(c => c.Restaurant && c.text)
         } catch (error) {
-            // console.log(error)
             Toast.fire({
                 icon: 'error',
                 title: '無法取得最新餐廳評論資料，請稍後再試..'

@@ -7,6 +7,7 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import router from './router'
+import store from './store'
 
 Vue.config.productionTip = false
 
@@ -14,5 +15,6 @@ Vue.config.productionTip = false
 // 把 Vue 有關的內容放進 public/index.html 裡的 <div id="app">
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

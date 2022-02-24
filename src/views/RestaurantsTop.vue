@@ -25,7 +25,7 @@
               >收藏數：{{ restaurant.FavoriteCount }}</span
             >
             <p class="card-text">
-              {{ restaurant.description }}
+              {{ restaurant.description ?  restaurant.description: "未描述"}}
             </p>
             <router-link
               :to="{
@@ -85,10 +85,8 @@ export default {
     async fetchTopRestaurants() {
       try {
         const  { data }  = await restaurantsAPI.getTopRestaurants()
-        // console.log(data.restaurants)
         this.restaurants = data.restaurants
       } catch (error) {
-        // console.log(error)
         Toast.fire({
           icon: 'error',
           title: '無法取得人氣餐廳，請稍後再試..'

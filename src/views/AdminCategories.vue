@@ -167,7 +167,6 @@ export default {
       }     
     },
     async updateCategory({ categoryId, name }) {
-      console.log("name", name);
       try {
         // TODO 透過 API 去向伺服器更新餐廳類別名稱
         const { data } = await adminAPI.categories.update(categoryId, {name} )

@@ -5,6 +5,9 @@ import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import Restaurants from '../views/Restaurants.vue'
 
+// 載入 state
+import store from './../store'
+
 Vue.use(VueRouter)
 
 // 新增一個路由{}
@@ -113,6 +116,15 @@ const routes = [
 const router = new VueRouter({
   linkExactActiveClass: 'active',
   routes
+})
+
+// Vue Router 監聽切換頁面事件 提供了 beforeEach 方法
+router.beforeEach((to, from, next) => {
+  // console.log('to', to)
+  // console.log('from', from)
+  // 使用 dispatch 呼叫 Vuex 內的 actions
+  store.dispatch('fetchCurrentUser')
+  next()
 })
 
 export default router

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import {v4 as uuidv4} from 'uuid'
+// import {v4 as uuidv4} from 'uuid'
 
 export default {
   props: {
@@ -45,7 +45,7 @@ export default {
       // 透過 API 向伺服器 請求 新增一筆評論資料
       // 傳遞給父元件修改資料
       this.$emit('after-create-comment', {
-        commentId: uuidv4(),
+        // commentId: uuidv4(),
         restaurantId: this.restaurantId,
         text: this.text
       })
