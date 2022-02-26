@@ -62,7 +62,7 @@ const routes = [
   },
   {
     path: '/restaurants/:id/dashboard',
-    name: 'dashboard',
+    name: 'restaurant-dashboard',
     component: () => import('../views/RestaurantDashboard.vue')
   },
   {
