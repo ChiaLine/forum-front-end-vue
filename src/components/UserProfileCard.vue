@@ -40,6 +40,7 @@
               type="button"
               class="btn btn-danger"
               @click.stop.prevent="deleteFollowing(user.id)"
+              :disabled="isProcessing"
             >
               取消追蹤
             </button>
@@ -48,6 +49,7 @@
               type="button"
               class="btn btn-primary"
               @click.stop.prevent="addFollowing(user.id)"
+              :disabled="isProcessing"
             >
               追蹤
             </button>
@@ -81,6 +83,7 @@ export default {
   data() {
     return {
       isFollowed: this.initialIsFollowed,
+      isProcessing: false
     };
   },
   watch: {
@@ -91,12 +94,15 @@ export default {
   methods: {
     async addFollowing(userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.addFollowing({ userId });
         if (data.status === "error") {
           throw new Error(data.message);
         }
         this.isFollowed = true;
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         console.error(error.message);
         Toast.fire({
           icon: "error",
@@ -106,12 +112,15 @@ export default {
     },
     async deleteFollowing(userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFollowing({ userId });
         if (data.status === "error") {
           throw new Error(data.message);
         }
         this.isFollowed = false;
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         console.error(error.message);
         Toast.fire({
           icon: "error",

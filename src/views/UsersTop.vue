@@ -27,6 +27,7 @@
               type="button"
               class="btn btn-danger"
               @click.stop.prevent="deleteFollowing(user.id)"
+              :disabled="isProcessing"
             >
               取消追蹤
             </button>
@@ -35,6 +36,7 @@
               type="button"
               class="btn btn-primary"
               @click.stop.prevent="addFollowing(user.id)"
+              :disabled="isProcessing"
             >
               追蹤
             </button>
@@ -61,7 +63,8 @@ export default {
   data() {
     return {
       users: [],
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     };
   },
   methods: {
@@ -90,6 +93,7 @@ export default {
     },
     async addFollowing (userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.addFollowing({ userId })
 
         if (data.status !== 'success') {
@@ -107,7 +111,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法加入追蹤，請稍後再試'
@@ -116,6 +122,7 @@ export default {
     },
     async deleteFollowing (userId) {
       try {
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFollowing({ userId })
 
         if (data.status !== 'success') {
@@ -133,7 +140,9 @@ export default {
             }
           }
         })
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法取消追蹤，請稍後再試'

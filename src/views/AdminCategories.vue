@@ -17,6 +17,7 @@
             type="button"
             class="btn btn-primary"
             @click.stop.prevent="createCategory"
+            :disabled="isProcessing"
           >
             新增
           </button>
@@ -104,7 +105,8 @@ export default {
     return {
       categories: [],
       nweCategoryName: "",
-      isLoading: true
+      isLoading: true,
+      isProcessing: false
     };
   },
   created() {
@@ -134,6 +136,7 @@ export default {
     },
     async createCategory() {
       try {
+        this.isProcessing = true
         // 新增類別
         const nweCategoryName = {
           name: this.nweCategoryName,
@@ -147,7 +150,9 @@ export default {
         this.nweCategoryName = "";
         // 成功呼叫取資料
         this.fetchCategories()
+        this.isProcessing = false
       } catch (error) {
+        this.isProcessing = false
         Toast.fire({
           icon: 'error',
           title: '無法新增餐廳類別，請稍後再試'
