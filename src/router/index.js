@@ -10,6 +10,18 @@ import store from './../store'
 
 Vue.use(VueRouter)
 
+// 沒有權限的使用者來說，即使他知道網址、也應該被轉址到 404 頁面
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser
+  // 若帳號沒有 isAdmin 的權限
+  if (currentUser && !currentUser.isAdmin) {
+    next('/notfound')
+    return
+  }
+
+  next()
+}
+
 // 新增一個路由{}
 const routes = [
   {
@@ -76,32 +88,39 @@ const routes = [
   {
     path: '/admin/restaurants',
     name: 'admin-restaurants',
-    component: () => import('../views/AdminRestaurants.vue')
+    component: () => import('../views/AdminRestaurants.vue'),
+    // 沒有權限的使用者來說，即使他知道網址、也應該被轉址到 404 頁面
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/new',
     name: 'admin-restaurants-new',
-    component: () => import('../views/AdminRestaurantNew.vue')
+    component: () => import('../views/AdminRestaurantNew.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id/edit',
     name: 'admin-restaurants-edit',
-    component: () => import('../views/AdminRestaurantEdit.vue')
+    component: () => import('../views/AdminRestaurantEdit.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id',
     name: 'admin-restaurant',
-    component: () => import('../views/AdminRestaurant.vue')
+    component: () => import('../views/AdminRestaurant.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/categories',
     name: 'admin-categories',
-    component: () => import('../views/AdminCategories.vue')
+    component: () => import('../views/AdminCategories.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/users',
     name: 'admin-users',
-    component: () => import('../views/AdminUsers.vue')
+    component: () => import('../views/AdminUsers.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     // 不管使用者寫什麼，沒配到就選*
@@ -119,11 +138,37 @@ const router = new VueRouter({
 })
 
 // Vue Router 監聽切換頁面事件 提供了 beforeEach 方法
-router.beforeEach((to, from, next) => {
-  // console.log('to', to)
-  // console.log('from', from)
-  // 使用 dispatch 呼叫 Vuex 內的 actions
-  store.dispatch('fetchCurrentUser')
+router.beforeEach(async (to, from, next) => {
+  // 從 localStorage 取出 token
+  const tokenInLocalStorage = localStorage.getItem('token')
+
+  // 從 state 取出 token
+  const tokenInStore = store.state.token
+
+  // 預設是尚未驗證
+  let isAuthenticated = store.state.isAuthenticated
+
+  // 如果有 token 的話才驗證 & 比較 localStorage 和 store 中的 token 是否一樣
+  if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
+    // 使用 dispatch 呼叫 Vuex 的 actions方法 向後端取得驗證成功與否
+    isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  // 對於不需要驗證 token 的頁面
+  const pathsWithoutAuthentication = ['sign-up', 'sign-in']
+
+  // 如果 token 無效且進入需要驗證的頁面則轉址到登入頁 & 避免出現無窮迴圈
+  if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
+    next('/signin')
+    return
+  }
+
+  // 如果 token 有效且進入不需要驗證到頁面則轉址到餐廳首頁 & 避免出現無窮迴圈
+  if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
+    next('/restaurants')
+    return
+  }
+
   next()
 })
 

@@ -15,10 +15,12 @@ export default new Vuex.Store({
       image: '',
       isAdmin: false
     },
-    isAuthenticated: false
+    // 登入狀態
+    isAuthenticated: false,
+    // 新增 token 屬性
+    token: '',
   },
   // 用來修改 state 資料的方法
-  // 透過 commit 發動 mutations 方法
   mutations: {
     // 有兩個參數原本的,從外面傳進來的 更新 state 裡的資料
     setCurrentUser(state, currentUser) {
@@ -27,19 +29,31 @@ export default new Vuex.Store({
         // 將 API 取得的 currentUser 覆蓋掉 Vuex state 中的 currentUser
         ...currentUser
       }
+
       // 將使用者的登入狀態改為 true
       state.isAuthenticated = true
+
+       // 將使用者驗證用的 token 儲存在 state 中
+      state.token = localStorage.getItem('token')
+    },
+    // 處理登出功能 透過 commit 呼叫 mutations 方法
+    revokeAuthentication (state) {
+      state.currentUser = {}
+      state.isAuthenticated = false
+      // 登出時一併將 state 內的 token 移除
+      state.token = ''
+      localStorage.removeItem('token')
     }
   },
-  // 透過 dispatch() 可以呼叫 actions 屬性內的方法 
+  // 專門 API 的方法 
   actions: {
-    // 透過API請求資料
+    // 驗證使用者身份 透過 dispatch() 呼叫 actions 方法 
     async fetchCurrentUser ({commit}) {
       try {
-        // 呼叫 usersAPI.getCurrentUser() 方法，並將 response 顯示出來        
+        // 透過 API請求資料
         const { data } = await usersAPI.getCurrentUser()
-        // console.log('data', data)
         const { id, name, email, image, isAdmin } = data
+
         // 取得 API資料 呼叫 更新 mutations 方法 state 裡的資料
         commit('setCurrentUser', {
           id,
@@ -48,9 +62,17 @@ export default new Vuex.Store({
           image,
           isAdmin
         })
+
+        // 使用者Token驗證成功 回傳..
+        return true
       } catch (error) {
-        console.log('error', error)
-        console.error('can not fetch user information')
+        console.error(error.message)
+
+        // 驗證失敗的話一併觸發登出的行為，以清除 state 中的 token
+        commit('revokeAuthentication')
+
+        // 使用者Token驗證失敗 回傳..
+        return false
       }
     }
   },
