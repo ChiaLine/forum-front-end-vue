@@ -1,6 +1,8 @@
 <template>
   <div class="container py-5">
     <NavTabs />
+    <Spinner v-if="isLoading" />
+    <template v-else>
     <!-- 餐廳類別標籤 RestaurantsNavPills -->
     <RestaurantsNavPills :categories="categories" />
     <div class="row">
@@ -20,6 +22,7 @@
       :next-page="nextPage"
       :category-id="categoryId"
     />
+    </template>
   </div>
 </template>
 
@@ -30,6 +33,7 @@ import RestaurantsNavPills from "../components/RestaurantsNavPills.vue";
 import RestaurantPagination from "../components/RestaurantPagination.vue";
 import restaurantsAPI from "../apis/restaurants.js";
 import { Toast } from './../utils/helpers'
+import Spinner from '../components/Spinner.vue'
 
 export default {
   components: {
@@ -37,6 +41,7 @@ export default {
     RestaurantCard,
     RestaurantsNavPills,
     RestaurantPagination,
+    Spinner,
   },
   data() {
     return {
@@ -52,6 +57,7 @@ export default {
       previousPage: -1,
       // 下一頁
       nextPage: -1,
+      isLoading: true
     };
   },
   methods: {
@@ -80,7 +86,9 @@ export default {
         this.totalPage = totalPage;
         this.previousPage = prev;
         this.nextPage = next;
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: 'error',
           title: '無法取得餐廳資料，請稍後再試..'

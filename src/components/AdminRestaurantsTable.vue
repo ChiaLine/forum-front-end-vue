@@ -1,6 +1,7 @@
 <template>
   <table class="table">
-    <thead class="thead-dark">
+    <Spinner v-if="isLoading" />
+    <thead class="thead-dark" v-else>
       <tr>
         <th scope="col">#</th>
         <th scope="col">Category</th>
@@ -54,11 +55,16 @@
 <script>
 import adminAPI from './../apis/admin'
 import { Toast } from './../utils/helpers'
+import Spinner from '../components/Spinner.vue'
 
 export default {
+  components: {
+    Spinner
+  },
   data() {
     return {
       restaurants: [],
+      isLoading: true
     };
   },
   created() {
@@ -69,7 +75,9 @@ export default {
       try {
         const { data } = await adminAPI.restaurants.get()
         this.restaurants = data.restaurants;
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: 'error',
           title: '無法取得餐廳資料，請稍後再試'

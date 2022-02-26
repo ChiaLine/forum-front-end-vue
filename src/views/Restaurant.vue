@@ -1,6 +1,8 @@
 <template>
   <div class="container py-5">
-    <!-- 餐廳資訊頁 RestaurantDetail -->
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- 餐廳資訊頁 RestaurantDetail -->
     <RestaurantDetail
       :initial-restaurant="restaurant"
       :restaurantComments="restaurantComments"
@@ -16,6 +18,7 @@
       :restaurant-id="restaurant.id"
       @after-create-comment="afterCreateComment"
     />
+    </template>
   </div>
 </template>
 
@@ -27,6 +30,7 @@ import restaurantsAPI from "../apis/restaurants.js";
 import { Toast } from "./../utils/helpers";
 // 取得 user 登入資料
 import { mapState } from 'vuex'
+import Spinner from '../components/Spinner.vue'
 
 export default {
   name: "restaurant",
@@ -34,6 +38,7 @@ export default {
     RestaurantDetail,
     RestaurantComments,
     CreateComment,
+    Spinner,
   },
   data() {
     return {
@@ -50,6 +55,7 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
+      isLoading: true
     };
   },
   computed: {
@@ -93,7 +99,9 @@ export default {
         };
 
         this.restaurantComments = Comments;
+        this.isLoading = false
       } catch (error) {
+        this.isLoading = false
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳資料，請稍後再試..",
